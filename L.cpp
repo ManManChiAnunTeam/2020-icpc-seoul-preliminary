@@ -41,8 +41,7 @@ int main() {
     cin >> s;
     cin >> t;
     cin >> x >> y;
-
-    string p;
+    string p, q;
     p.reserve(n);
     for(int i=0; i<x; i++) {
         p.push_back(s[i]);
@@ -53,90 +52,74 @@ int main() {
     for(int i=y+1; i<n; i++) {
         p.push_back(s[i]);
     }
+    q = p;
+    reverse(q.begin(), q.end());
 
-    vector<int> fail, a(n), b(n);
-    kmp(t, p, fail, a);
-    reverse(p.begin(), p.end());
-    reverse(t.begin(), t.end());
-    kmp(t, p, fail, b);
-
-    reverse(b.begin(), b.end());
-    reverse(t.begin(), t.end());
-
-    int good_i = -1, good_j = -1;
-
-    if(b[0] == n-2) {
-        good_i = n-2;
-        good_j = n-1;
-        if(s[x] == t[good_i] && s[y] == t[good_j]) {
-            cout << "YES";
-            return 0;
+    bool flag = false;
+    vector<int> fail_l, fail_r, kmpl, kmpr;
+    // 1
+    if (t[0] == s[x] && t[1] == s[y]){
+        string A = s.substr(2, s.size() - 2);
+        string A_L = A;
+        reverse(A_L.begin(), A_L.end());
+        kmp(A, p, fail_l, kmpl);
+        kmp(A_L, q, fail_r, kmpr);
+        for (int i = 0; i < n - 3; i++) {
+            if (kmpl[i] + kmpr[i + 1] == n - 2) flag = true;
         }
+        if (kmpl[0] == n - 2) flag = true;
     }
-
-    if(b[1] == n-2) {
-        good_i = 0;
-        good_j = n-1;
-        if(s[x] == t[good_i] && s[y] == t[good_j]) {
-            cout << "YES";
-            return 0;
+    // 2 
+    if (t[0] == s[x]){
+        string A = s.substr(1, s.size() - 1);
+        string A_L = A;
+        reverse(A_L.begin(), A_L.end());
+        kmp(A, p, fail_l, kmpl);
+        kmp(A_L, q, fail_r, kmpr);
+        for (int i = 0; i < n - 3; i++) {
+            if (kmpl[i] + kmpr[i + 2] == n - 2 && A[i + 1] == s[y]) flag = true;
         }
+        if (kmpl[n - 3] == n - 2 && A[n - 2] == s[y]) flag = true;
     }
+    // 3
+    if (t[0] == s[x]){
+        string A = s;
+        string A_L = A;
+        reverse(A_L.begin(), A_L.end());
+        kmp(A, p, fail_l, kmpl);
+        kmp(A_L, q, fail_r, kmpr);
 
-    if(b[2] == n-2) {
-        good_i = 0;
-        good_j = 1;
-        if(s[x] == t[good_i] && s[y] == t[good_j]) {
-            cout << "YES";
-            return 0;
+
+
+        if (t[n-1] == s[y]) {
+            for (int i = 0; i < n - 1; i++) {
+            if (kmpl[i] + kmpr[i + 1] == n - 2 && A[i + 1] == s[y]) flag = true;
+            } 
         }
+        
+
+        for (int i = 0; i < n - 3; i++) {
+            if (kmpl[i] + kmpr[i + 3] == n - 2 && t[i + 1] == s[x] && t[i + 2] == s[y]) flag = true;
+            if (kmpl[n - 3] == n - 2 && A[n - 2] == s[y]) flag = true;
+        }
+
+
+
+
+
+
+
+
+
+
+
+        if (kmpl[n - 3] == n - 2 && t[n-2]== s[x] && t[n-1] == s[y]) flag = true;
+
+
+
     }
-
-    for(int i=0; i<n-3; i++) {
-        if(a[i] + b[i+1] == n - 2) {
-            good_i = n-2;
-            good_j = n-1;
-            if(s[x] == t[good_i] && s[y] == t[good_j]) {
-                cout << "YES";
-                return 0;
-            }
-        }
-        else if(a[i] + b[i+2] == n - 2) {
-            good_i = i+1;
-            good_j = n-1;
-            if(s[x] == t[good_i] && s[y] == t[good_j]) {
-                cout << "YES";
-                return 0;
-            }
-        }
-        else if(a[i] + b[i+3] == n - 2) {
-            good_i = i+1;
-            good_j = i+2;
-            if(s[x] == t[good_i] && s[y] == t[good_j]) {
-                cout << "YES";
-                return 0;
-            }
-        }
-    }
-
-    if(a[n-2] == n-2) {
-        good_i = 0;
-        good_j = n-1;
-        if(s[x] == t[good_i] && s[y] == t[good_j]) {
-            cout << "YES";
-            return 0;
-        }
-    }
-
-    if(a[n-1] == n-2) {
-        good_i = 0;
-        good_j = 1;
-        if(s[x] == t[good_i] && s[y] == t[good_j]) {
-            cout << "YES";
-            return 0;
-        }
-    }
-
-    cout << "NO";
-    return 0;
+    
+    if (flag) cout << "YES" << endl;
+    else cout << "NO" << endl;
+    
 }
